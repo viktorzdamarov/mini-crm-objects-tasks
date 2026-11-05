@@ -8,3 +8,4 @@ dist
 .vercel
 supabase/.temp
 supabase/.branches
+docs/SUBMISSION.md

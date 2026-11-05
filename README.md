@@ -47,4 +47,3 @@ npx gh-pages -d dist -t
 - `src/pages` — экраны
 - `supabase/migrations` — схема и RLS
 - `scripts/setup-demo.mjs` — пользователи + `seed_demo()`
-- `docs/SUBMISSION.md` — текст для ответа на hh
