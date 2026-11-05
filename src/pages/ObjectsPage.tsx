@@ -33,7 +33,8 @@ export function ObjectsPage() {
   })
 
   const objectsQuery = useQuery({
-    queryKey: ['objects'],
+    queryKey: ['objects', session?.user.id],
+    enabled: !!session?.user.id,
     queryFn: async () => {
       const { data, error } = await supabase
         .from('objects')

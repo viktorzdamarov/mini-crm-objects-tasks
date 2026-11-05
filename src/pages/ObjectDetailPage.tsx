@@ -33,8 +33,8 @@ export function ObjectDetailPage() {
   })
 
   const objectQuery = useQuery({
-    queryKey: ['object', objectId],
-    enabled: !!objectId,
+    queryKey: ['object', objectId, session?.user.id],
+    enabled: !!objectId && !!session?.user.id,
     queryFn: async () => {
       const { data, error } = await supabase.from('objects').select('*').eq('id', objectId!).single()
       if (error) throw error
@@ -43,8 +43,8 @@ export function ObjectDetailPage() {
   })
 
   const tasksQuery = useQuery({
-    queryKey: ['tasks', objectId],
-    enabled: !!objectId,
+    queryKey: ['tasks', objectId, session?.user.id],
+    enabled: !!objectId && !!session?.user.id,
     queryFn: async () => {
       const { data, error } = await supabase
         .from('tasks')

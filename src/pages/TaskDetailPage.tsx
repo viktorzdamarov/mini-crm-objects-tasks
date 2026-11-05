@@ -39,8 +39,8 @@ export function TaskDetailPage() {
   })
 
   const taskQuery = useQuery({
-    queryKey: ['task', taskId],
-    enabled: !!taskId,
+    queryKey: ['task', taskId, session?.user.id],
+    enabled: !!taskId && !!session?.user.id,
     queryFn: async () => {
       const { data, error } = await supabase.from('tasks').select('*').eq('id', taskId!).single()
       if (error) throw error
@@ -49,8 +49,8 @@ export function TaskDetailPage() {
   })
 
   const historyQuery = useQuery({
-    queryKey: ['task-history', taskId],
-    enabled: !!taskId,
+    queryKey: ['task-history', taskId, session?.user.id],
+    enabled: !!taskId && !!session?.user.id,
     queryFn: async () => {
       const { data, error } = await supabase
         .from('task_status_history')
@@ -63,7 +63,8 @@ export function TaskDetailPage() {
   })
 
   const profilesQuery = useQuery({
-    queryKey: ['profiles-map'],
+    queryKey: ['profiles-map', session?.user.id],
+    enabled: !!session?.user.id,
     queryFn: async () => {
       const { data, error } = await supabase
         .from('profiles')
