@@ -4,6 +4,7 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
   type ReactNode,
 } from 'react'
@@ -26,13 +27,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null)
   const [profile, setProfile] = useState<Profile | null>(null)
   const [loading, setLoading] = useState(true)
+  const profileLoadSeq = useRef(0)
 
   const loadProfile = useCallback(async (userId: string) => {
+    const seq = ++profileLoadSeq.current
     const { data, error } = await supabase
       .from('profiles')
       .select('*')
       .eq('id', userId)
       .maybeSingle()
+
+    if (seq !== profileLoadSeq.current) return
 
     if (error) {
       console.error(error)
@@ -62,9 +67,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } = supabase.auth.onAuthStateChange((_event, nextSession) => {
       setSession(nextSession)
       if (nextSession?.user.id) {
-        void loadProfile(nextSession.user.id)
+        setLoading(true)
+        void loadProfile(nextSession.user.id).finally(() => setLoading(false))
       } else {
+        profileLoadSeq.current += 1
         setProfile(null)
+        setLoading(false)
       }
     })
 
@@ -77,8 +85,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [])
 
   const signOut = useCallback(async () => {
-    await supabase.auth.signOut()
+    profileLoadSeq.current += 1
+    setSession(null)
     setProfile(null)
+    setLoading(false)
+    await supabase.auth.signOut()
   }, [])
 
   const value = useMemo(

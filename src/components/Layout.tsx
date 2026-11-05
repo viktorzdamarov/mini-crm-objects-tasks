@@ -1,5 +1,5 @@
 import { Building2 } from 'lucide-react'
-import { Link, NavLink, Outlet } from 'react-router-dom'
+import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom'
 import { useAuth } from '../auth/AuthProvider'
 import { Button } from './ui/button'
 import { cn } from '../lib/cn'
@@ -12,6 +12,12 @@ const navClass = ({ isActive }: { isActive: boolean }) =>
 
 export function Layout() {
   const { profile, signOut } = useAuth()
+  const navigate = useNavigate()
+
+  async function handleSignOut() {
+    await signOut()
+    navigate('/login', { replace: true })
+  }
 
   return (
     <div className="min-h-screen">
@@ -36,7 +42,7 @@ export function Layout() {
               {profile?.full_name || profile?.email}
               {profile?.role === 'assigner' ? ' · Постановщик' : ' · Исполнитель'}
             </span>
-            <Button variant="secondary" size="sm" onClick={() => void signOut()}>
+            <Button variant="secondary" size="sm" onClick={() => void handleSignOut()}>
               Выйти
             </Button>
           </div>
